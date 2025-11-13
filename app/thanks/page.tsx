@@ -28,10 +28,11 @@ export default async function ThanksPage({ searchParams }: { searchParams: { tok
         <img src={qr} alt="Reservation QR" width={256} height={256} />
       </div>
       <div>
-        <form action={`/api/reservations/cancel?token=${encodeURIComponent(token)}`} method="post">
-          <button className="btn-secondary" type="submit">キャンセルする</button>
-        </form>
+        <a className="btn-secondary" href={`/api/reservations/cancel?token=${encodeURIComponent(token)}`} onClick={(e) => { e.preventDefault(); fetch(`/api/reservations/cancel?token=${encodeURIComponent(token)}`, { method: "PATCH" }).then(() => window.location.reload()); }}>
+          キャンセルする
+        </a>
       </div>
     </div>
   );
 }
+

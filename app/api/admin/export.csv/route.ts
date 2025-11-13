@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { supabaseAdmin } from "@/lib/supabaseServer";
 import { toCSV } from "@/lib/csv";
+import iconv from "iconv-lite";
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
@@ -34,14 +35,71 @@ export async function GET(req: Request) {
     checked_in: r.checked_in,
     created_at: r.created_at
   }));
-  const csv = toCSV(rows);
-  return new Response(csv, {
+  const enc = url.searchParams.get("enc");
+  // UTF-16LE + TSV は Excel で最も確実に表示できる
+  if (enc === "utf16") {
+    const headers = [
+      "show_title",
+      "start_at",
+      "venue",
+      "name",
+      "email",
+      "qty",
+      "status",
+      "checked_in",
+      "created_at"
+    ];
+    const escape = (v: any) => String(v ?? "").replace(/\t/g, " ").replace(/[\r\n]/g, " ");
+    const lines = [headers.join("\t"), ...rows.map(r => headers.map(h => escape((r as any)[h])).join("\t"))];
+    const tsv = lines.join("\r\n");
+    const bomBuf = Buffer.from([0xFF, 0xFE]); // UTF-16LE BOM
+    const bodyBuf = Buffer.concat([bomBuf, iconv.encode(tsv, "UTF-16LE")]);
+    return new Response(bodyBuf, {
+      status: 200,
+      headers: {
+        "Content-Type": "text/tab-separated-values; charset=UTF-16LE",
+        "Content-Disposition": "attachment; filename=reservations.tsv",
+        "Cache-Control": "no-store"
+      }
+    });
+  }
+
+  const fixedHeaders = [
+    "show_title",
+    "start_at",
+    "venue",
+    "name",
+    "email",
+    "qty",
+    "status",
+    "checked_in",
+    "created_at"
+  ];
+  // 安定した列順でCSVも作成
+  const escapeCsv = (s: string) => /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  const csv = [
+    fixedHeaders.join(","),
+    ...rows.map((r: any) => fixedHeaders.map(h => escapeCsv(String(r?.[h] ?? ""))).join(","))
+  ].join("\r\n");
+  if (enc === "utf8") {
+    const bom = "\uFEFF" + csv;
+    return new Response(bom, {
+      status: 200,
+      headers: {
+        "Content-Type": "text/csv; charset=utf-8",
+        "Content-Disposition": "attachment; filename=reservations.csv",
+        "Cache-Control": "no-store"
+      }
+    });
+  }
+  // 既定は Shift_JIS (CP932) に変換してExcelでの文字化けを防ぐ
+  const sjis = iconv.encode(csv, "Shift_JIS");
+  return new Response(sjis, {
     status: 200,
     headers: {
-      "Content-Type": "text/csv; charset=utf-8",
+      "Content-Type": "text/csv; charset=shift_jis",
       "Content-Disposition": "attachment; filename=reservations.csv",
       "Cache-Control": "no-store"
     }
   });
 }
-

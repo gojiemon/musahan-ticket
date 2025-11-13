@@ -1,6 +1,6 @@
 import { supabaseAdmin } from "@/lib/supabaseServer";
 
-async function handleCancel(req: Request) {
+export async function PATCH(req: Request) {
   const url = new URL(req.url);
   const token = url.searchParams.get("token");
   if (!token) return new Response(JSON.stringify({ error: "token required" }), { status: 400 });
@@ -20,11 +20,3 @@ async function handleCancel(req: Request) {
   return new Response(JSON.stringify({ ok: true }), { status: 200 });
 }
 
-export async function PATCH(req: Request) {
-  return handleCancel(req);
-}
-
-// Allow POST as well to enable simple <form method="post"> from Server Components
-export async function POST(req: Request) {
-  return handleCancel(req);
-}

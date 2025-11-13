@@ -1,7 +1,5 @@
 export function assertSameOriginOrThrow(req: Request) {
   const origin = req.headers.get("origin");
-  // ローカル開発では CSRF を厳格にしない（ホスト差異: 127.0.0.1/localhost などで誤検知しやすいため）
-  if (process.env.NODE_ENV !== "production") return;
   if (!origin) return; // サーバ間通信や同一プロセス呼び出しは許容
   try {
     const o = new URL(origin);

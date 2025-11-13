@@ -29,7 +29,8 @@ export default function AdminDashboard() {
   }, []);
 
   const downloadCSV = () => {
-    const url = selected ? `/api/admin/export.csv?performance_id=${encodeURIComponent(selected)}` : "/api/admin/export.csv";
+    const base = selected ? `/api/admin/export.csv?performance_id=${encodeURIComponent(selected)}` : "/api/admin/export.csv";
+    const url = base + (base.includes("?") ? "&" : "?") + "enc=utf16"; // Excelで確実に開けるUTF-16LE TSV
     window.location.href = url;
   };
 
@@ -81,6 +82,9 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-6">
+      <div className="flex justify-end">
+        <a className="btn-secondary" href="/admin/broadcast">メール一斉配信へ</a>
+      </div>
       <h1 className="text-xl font-semibold">管理ダッシュボード</h1>
       <section className="space-y-2">
         <h2 className="font-semibold">予約CSV</h2>
@@ -112,4 +116,3 @@ export default function AdminDashboard() {
     </div>
   );
 }
-

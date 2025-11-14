@@ -1,4 +1,4 @@
-import { generateQRDataUrl } from "@/lib/qr";
+﻿import { generateQRDataUrl } from "@/lib/qr";
 
 async function getData(token: string) {
   const url = `${process.env.APP_BASE_URL}/api/reservations/verify?token=${encodeURIComponent(token)}`;
@@ -28,11 +28,10 @@ export default async function ThanksPage({ searchParams }: { searchParams: { tok
         <img src={qr} alt="Reservation QR" width={256} height={256} />
       </div>
       <div>
-        <a className="btn-secondary" href={`/api/reservations/cancel?token=${encodeURIComponent(token)}`} onClick={(e) => { e.preventDefault(); fetch(`/api/reservations/cancel?token=${encodeURIComponent(token)}`, { method: "PATCH" }).then(() => window.location.reload()); }}>
-          キャンセルする
-        </a>
+        <form action={`/api/reservations/cancel?token=${encodeURIComponent(token)}`} method="post">
+          <button className="btn-secondary" type="submit">キャンセルする</button>
+        </form>
       </div>
     </div>
   );
 }
-

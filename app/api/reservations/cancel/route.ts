@@ -1,6 +1,6 @@
-import { supabaseAdmin } from "@/lib/supabaseServer";
+﻿import { supabaseAdmin } from "@/lib/supabaseServer";
 
-export async function PATCH(req: Request) {
+async function handleCancel(req: Request) {
   const url = new URL(req.url);
   const token = url.searchParams.get("token");
   if (!token) return new Response(JSON.stringify({ error: "token required" }), { status: 400 });
@@ -20,3 +20,10 @@ export async function PATCH(req: Request) {
   return new Response(JSON.stringify({ ok: true }), { status: 200 });
 }
 
+export async function PATCH(req: Request) {
+  return handleCancel(req);
+}
+
+export async function POST(req: Request) {
+  return handleCancel(req);
+}

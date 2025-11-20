@@ -1,6 +1,5 @@
 async function unsub(token: string) {
-  const url = `${process.env.APP_BASE_URL}/api/unsub?token=${encodeURIComponent(token)}`;
-  const res = await fetch(url, { cache: "no-store" });
+  const res = await fetch(`/api/unsub?token=${encodeURIComponent(token)}`, { cache: "no-store" });
   return res.ok;
 }
 
@@ -13,4 +12,3 @@ export default async function UnsubPage({ searchParams }: { searchParams: { toke
     </div>
   );
 }
-

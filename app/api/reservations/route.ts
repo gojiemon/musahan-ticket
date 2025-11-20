@@ -6,6 +6,7 @@ import { normalizeEmail } from "@/lib/normalizeEmail";
 import { supabaseAdmin } from "@/lib/supabaseServer";
 import { generateQRDataUrl } from "@/lib/qr";
 import { sendReservationEmail, sendSubscribeConfirmEmail } from "@/lib/email";
+import { getBaseUrl } from "@/lib/baseUrl";
 
 const schema = z.object({
   performance_id: z.string().uuid(),
@@ -81,8 +82,9 @@ export async function POST(req: Request) {
         confirm_token_expires_at: expires,
         unsub_token: unsub_token
       }, { onConflict: "email" });
-      const confirmUrl = `${process.env.APP_BASE_URL}/confirm?token=${confirm_token}`;
-      const unsubUrl = `${process.env.APP_BASE_URL}/unsub?token=${unsub_token}`;
+      const baseUrl = getBaseUrl(req);
+      const confirmUrl = `${baseUrl}/confirm?token=${confirm_token}`;
+      const unsubUrl = `${baseUrl}/unsub?token=${unsub_token}`;
       await sb.from("deliveries").insert({ subject: "購読の確認", body: confirmUrl });
       await sendSubscribeConfirmEmail({
         to: input.data.email,
@@ -93,8 +95,9 @@ export async function POST(req: Request) {
     }
 
     const qr = await generateQRDataUrl(`ticket:${token}`);
-    const cancelUrl = `${process.env.APP_BASE_URL}/api/reservations/cancel?token=${token}`;
-    const unsubUrl = `${process.env.APP_BASE_URL}/unsub?token=${crypto.randomUUID()}`;
+    const baseUrl = getBaseUrl(req);
+    const cancelUrl = `${baseUrl}/api/reservations/cancel?token=${token}`;
+    const unsubUrl = `${baseUrl}/unsub?token=${crypto.randomUUID()}`;
 
     await sb.from("deliveries").insert({ subject: "予約確定", body: `token=${token}` });
 

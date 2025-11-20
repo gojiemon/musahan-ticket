@@ -1,6 +1,5 @@
 async function confirm(token: string) {
-  const url = `${process.env.APP_BASE_URL}/api/confirm?token=${encodeURIComponent(token)}`;
-  const res = await fetch(url, { cache: "no-store" });
+  const res = await fetch(`/api/confirm?token=${encodeURIComponent(token)}`, { cache: "no-store" });
   return res.ok;
 }
 
@@ -13,4 +12,3 @@ export default async function ConfirmPage({ searchParams }: { searchParams: { to
     </div>
   );
 }
-

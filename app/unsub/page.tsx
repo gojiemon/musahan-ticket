@@ -1,8 +1,5 @@
-import { withBasePath } from "@/lib/baseUrl";
-
 async function unsub(token: string) {
-  const url = withBasePath(`/api/unsub?token=${encodeURIComponent(token)}`);
-  const res = await fetch(url, { cache: "no-store" });
+  const res = await fetch(`/api/unsub?token=${encodeURIComponent(token)}`, { cache: "no-store" });
   return res.ok;
 }
 
@@ -15,4 +12,3 @@ export default async function UnsubPage({ searchParams }: { searchParams: { toke
     </div>
   );
 }
-

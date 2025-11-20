@@ -1,9 +1,7 @@
-﻿import { withBasePath } from "@/lib/baseUrl";
 import { generateQRDataUrl } from "@/lib/qr";
 
 async function getData(token: string) {
-  const url = withBasePath(`/api/reservations/verify?token=${encodeURIComponent(token)}`);
-  const res = await fetch(url, { cache: "no-store" });
+  const res = await fetch(`/api/reservations/verify?token=${encodeURIComponent(token)}`, { cache: "no-store" });
   if (!res.ok) return null;
   return res.json();
 }

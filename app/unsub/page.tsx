@@ -1,5 +1,7 @@
+import { withBasePath } from "@/lib/baseUrl";
+
 async function unsub(token: string) {
-  const url = `${process.env.APP_BASE_URL}/api/unsub?token=${encodeURIComponent(token)}`;
+  const url = withBasePath(`/api/unsub?token=${encodeURIComponent(token)}`);
   const res = await fetch(url, { cache: "no-store" });
   return res.ok;
 }

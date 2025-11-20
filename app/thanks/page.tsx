@@ -1,7 +1,8 @@
-﻿import { generateQRDataUrl } from "@/lib/qr";
+﻿import { withBasePath } from "@/lib/baseUrl";
+import { generateQRDataUrl } from "@/lib/qr";
 
 async function getData(token: string) {
-  const url = `${process.env.APP_BASE_URL}/api/reservations/verify?token=${encodeURIComponent(token)}`;
+  const url = withBasePath(`/api/reservations/verify?token=${encodeURIComponent(token)}`);
   const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) return null;
   return res.json();
